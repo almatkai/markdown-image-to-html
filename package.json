@@ -1,0 +1,87 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "markdown-image-to-html",
+  "title": "Markdown Image to HTML",
+  "description": "Transform a Markdown Image to HTML. This allows us to fix image size in Markdown base files.",
+  "icon": "command-icon.png",
+  "author": "almatkai",
+  "contributors": [
+    "daniellacoste"
+  ],
+  "categories": [
+    "Developer Tools",
+    "Productivity"
+  ],
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "index",
+      "title": "Markdown Image to HTML",
+      "description": "Transform a Markdown Image to HTML. This allows us to fix image size in Markdown base files.",
+      "mode": "no-view",
+      "arguments": [
+        {
+          "name": "markdownImage",
+          "placeholder": "![image name](https://myimage.com/myimage)",
+          "type": "text",
+          "required": false
+        },
+        {
+          "name": "imageWidth",
+          "placeholder": "300",
+          "type": "text",
+          "required": false
+        }
+      ],
+      "preferences": [
+        {
+          "name": "imageWidth",
+          "title": "Image width",
+          "description": "Image width in pixels when transformed to HTML.",
+          "type": "textfield",
+          "default": "300",
+          "required": true
+        }
+      ],
+      "platforms": [
+        "macOS",
+        "Windows"
+      ]
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.104.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "tsx": "^4.22.4",
+    "typescript": "^5.9.3"
+  },
+  "scripts": {
+    "build": "ray build -e dist",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test test/*.test.ts"
+  },
+  "id": "com.tezbar.markdown-image-to-html",
+  "platforms": [
+    "macOS",
+    "Windows"
+  ],
+  "version": "0.1.0",
+  "tezbar": {
+    "schemaVersion": 1,
+    "platforms": [
+      "macos",
+      "windows"
+    ],
+    "linuxStatus": "coming-soon",
+    "repository": "https://github.com/almatkai/markdown-image-to-html",
+    "upstream": {
+      "repository": "https://github.com/raycast/extensions",
+      "path": "extensions/markdown-image-to-html",
+      "commit": "6734d85992290066fd31a7f5bee3cca3d3545a1a"
+    }
+  }
+}
