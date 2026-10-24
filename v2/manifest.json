@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 2,
+  "id": "com.tezbar.native.markdown-image-to-html",
+  "slug": "markdown-image-to-html",
+  "name": "Markdown Image to HTML",
+  "version": "0.1.0",
+  "description": "Transform a Markdown Image to HTML. This allows us to fix image size in Markdown base files. Original Raycast author: qeude; contributor: daniellacoste. Native Rust port for Tezbar.",
+  "icon": "/extensions/icons/markdown-image-to-html.png",
+  "runtime": "rust",
+  "replaces": [
+    "raycast.markdown-image-to-html"
+  ],
+  "platforms": [
+    "macOS",
+    "Windows"
+  ],
+  "commands": [
+    {
+      "name": "index",
+      "title": "Markdown Image to HTML",
+      "description": "Transform a Markdown Image to HTML. This allows us to fix image size in Markdown base files.",
+      "mode": "no-view",
+      "arguments": [
+        {
+          "name": "markdownImage",
+          "placeholder": "![image name](https://myimage.com/myimage)",
+          "type": "text",
+          "required": false
+        },
+        {
+          "name": "imageWidth",
+          "placeholder": "300",
+          "type": "text",
+          "required": false
+        }
+      ],
+      "preferences": [
+        {
+          "name": "imageWidth",
+          "title": "Image width",
+          "description": "Image width in pixels when transformed to HTML.",
+          "type": "textfield",
+          "default": "300",
+          "required": true
+        }
+      ],
+      "platforms": [
+        "macOS",
+        "Windows"
+      ],
+      "runtime": "rust"
+    }
+  ],
+  "verification": [
+    {
+      "platform": "macOS",
+      "state": "not-run",
+      "note": "Real selected text, clipboard, focus and paste QA has not run."
+    },
+    {
+      "platform": "Windows",
+      "state": "not-run",
+      "note": "Real selected text, clipboard, focus and paste QA has not run."
+    }
+  ]
+}
