@@ -1,0 +1,6 @@
+/target/
+/.validation/
+# Preserve all pinned fixtures even when an ancestor ignores dist or logs.
+!/tests/
+!/tests/fixtures/
+!/tests/fixtures/**

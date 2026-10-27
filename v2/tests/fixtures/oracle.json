@@ -1,0 +1,8883 @@
+[
+  {
+    "name": "canonical valid skips all reads",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "legacy typo valid",
+    "payload": {
+      "argumentValues": {
+        "mardownImage": "![alt](https://example.test/a.png)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "canonical wins",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![canonical](x)",
+        "mardownImage": "![legacy](y)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"canonical\" src=\"x\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "empty canonical ignores legacy",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "",
+        "mardownImage": "![alt](https://example.test/a.png)"
+      },
+      "preferences": {}
+    },
+    "selection": {
+      "value": "![selection](s)"
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"selection\" src=\"s\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "invalid canonical ignores legacy",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "invalid",
+        "mardownImage": "![alt](https://example.test/a.png)"
+      },
+      "preferences": {}
+    },
+    "selection": {
+      "value": "invalid"
+    },
+    "clipboard": {
+      "value": "![alt](https://example.test/a.png)"
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ],
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "selection first",
+    "payload": {
+      "argumentValues": {},
+      "preferences": {}
+    },
+    "selection": {
+      "value": "before ![selected](s) after"
+    },
+    "clipboard": {
+      "error": true
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "core:platform:paste-text",
+          [
+            "before <img width=\"300\" alt=\"selected\" src=\"s\"/> after"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "selection throws",
+    "payload": {
+      "argumentValues": {},
+      "preferences": {}
+    },
+    "selection": {
+      "error": true
+    },
+    "clipboard": {
+      "value": "![alt](https://example.test/a.png)"
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ],
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "selection no match",
+    "payload": {
+      "argumentValues": {},
+      "preferences": {}
+    },
+    "selection": {
+      "value": "hello"
+    },
+    "clipboard": {
+      "value": "![alt](https://example.test/a.png)"
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ],
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "clipboard throws",
+    "payload": {
+      "argumentValues": {},
+      "preferences": {}
+    },
+    "selection": {
+      "error": true
+    },
+    "clipboard": {
+      "error": true
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "no match",
+    "payload": {
+      "argumentValues": {},
+      "preferences": {}
+    },
+    "selection": {
+      "value": "nothing"
+    },
+    "clipboard": {
+      "value": "nothing"
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "paste throws",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)"
+      },
+      "preferences": {}
+    },
+    "paste": {
+      "error": true
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "real payload fields only",
+    "payload": {
+      "arguments": {
+        "markdownImage": "![alt](https://example.test/a.png)"
+      },
+      "imageWidth": "999",
+      "preferences": {
+        "imageWidth": "234"
+      }
+    },
+    "clipboard": {
+      "value": "![alt](https://example.test/a.png)"
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ],
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"234\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": ""
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"fallback\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \" \"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": " "
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\" \" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"\\t\\n\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "\t\n"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"\t\n\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \" ﻿\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": " ﻿"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\" ﻿\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"0\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "0"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"0\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"-0\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "-0"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"-0\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"-12\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "-12"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"-12\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"+12\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "+12"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"+12\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"300.00\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "300.00"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300.00\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"03\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "03"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"03\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"1e3\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "1e3"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"1e3\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"1e9999\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "1e9999"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"1e9999\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"1e-9999\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "1e-9999"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"1e-9999\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"0xFF\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "0xFF"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"0xFF\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"0o17\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "0o17"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"0o17\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"0b11\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "0b11"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"0b11\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"-0x1\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "-0x1"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"fallback\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"+0b1\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "+0b1"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"fallback\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"Infinity\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "Infinity"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"Infinity\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"+Infinity\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "+Infinity"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"+Infinity\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"-Infinity\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "-Infinity"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"-Infinity\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"NaN\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "NaN"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"fallback\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"nan\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "nan"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"fallback\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"infinity\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "infinity"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"fallback\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"abc\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "abc"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"fallback\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"300px\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "300px"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"fallback\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"  7  \"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "  7  "
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"  7  \" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"300\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "300"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"fallback\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"᠎300\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "᠎300"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"fallback\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \".5\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": ".5"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\".5\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"1.\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "1."
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"1.\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"1e+\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "1e+"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"fallback\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"0x\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "0x"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"fallback\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"0b2\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "0b2"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"fallback\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"0o8\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "0o8"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"fallback\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"１２\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "１２"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"fallback\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "width \"1_000\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![alt](https://example.test/a.png)",
+        "imageWidth": "1_000"
+      },
+      "preferences": {
+        "imageWidth": "fallback"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"fallback\" alt=\"alt\" src=\"https://example.test/a.png\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "preference null",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "PRE ![one](u) MID ![two](v) POST"
+      },
+      "preferences": {
+        "imageWidth": null
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "PRE <img width=\"300\" alt=\"one\" src=\"u\"/> MID <img width=\"300\" alt=\"two\" src=\"v\"/> POST"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "preference \"\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "PRE ![one](u) MID ![two](v) POST"
+      },
+      "preferences": {
+        "imageWidth": ""
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "PRE <img width=\"\" alt=\"one\" src=\"u\"/> MID <img width=\"\" alt=\"two\" src=\"v\"/> POST"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "preference \" \"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "PRE ![one](u) MID ![two](v) POST"
+      },
+      "preferences": {
+        "imageWidth": " "
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "PRE <img width=\" \" alt=\"one\" src=\"u\"/> MID <img width=\" \" alt=\"two\" src=\"v\"/> POST"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "preference \"bad\\\" <script>\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "PRE ![one](u) MID ![two](v) POST"
+      },
+      "preferences": {
+        "imageWidth": "bad\" <script>"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "PRE <img width=\"bad\" <script>\" alt=\"one\" src=\"u\"/> MID <img width=\"bad\" <script>\" alt=\"two\" src=\"v\"/> POST"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "preference \"0\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "PRE ![one](u) MID ![two](v) POST"
+      },
+      "preferences": {
+        "imageWidth": "0"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "PRE <img width=\"0\" alt=\"one\" src=\"u\"/> MID <img width=\"0\" alt=\"two\" src=\"v\"/> POST"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "preference \"-0\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "PRE ![one](u) MID ![two](v) POST"
+      },
+      "preferences": {
+        "imageWidth": "-0"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "PRE <img width=\"-0\" alt=\"one\" src=\"u\"/> MID <img width=\"-0\" alt=\"two\" src=\"v\"/> POST"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "preference \"1e3\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "PRE ![one](u) MID ![two](v) POST"
+      },
+      "preferences": {
+        "imageWidth": "1e3"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "PRE <img width=\"1e3\" alt=\"one\" src=\"u\"/> MID <img width=\"1e3\" alt=\"two\" src=\"v\"/> POST"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "preference \"$&\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "PRE ![one](u) MID ![two](v) POST"
+      },
+      "preferences": {
+        "imageWidth": "$&"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "PRE <img width=\"![one](u)\" alt=\"one\" src=\"u\"/> MID <img width=\"![two](v)\" alt=\"two\" src=\"v\"/> POST"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "preference \"$1\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "PRE ![one](u) MID ![two](v) POST"
+      },
+      "preferences": {
+        "imageWidth": "$1"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "PRE <img width=\"one\" alt=\"one\" src=\"u\"/> MID <img width=\"two\" alt=\"two\" src=\"v\"/> POST"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "preference \"$2\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "PRE ![one](u) MID ![two](v) POST"
+      },
+      "preferences": {
+        "imageWidth": "$2"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "PRE <img width=\"u\" alt=\"one\" src=\"u\"/> MID <img width=\"v\" alt=\"two\" src=\"v\"/> POST"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "preference \"$$\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "PRE ![one](u) MID ![two](v) POST"
+      },
+      "preferences": {
+        "imageWidth": "$$"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "PRE <img width=\"$\" alt=\"one\" src=\"u\"/> MID <img width=\"$\" alt=\"two\" src=\"v\"/> POST"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "preference \"$`\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "PRE ![one](u) MID ![two](v) POST"
+      },
+      "preferences": {
+        "imageWidth": "$`"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "PRE <img width=\"PRE \" alt=\"one\" src=\"u\"/> MID <img width=\"PRE ![one](u) MID \" alt=\"two\" src=\"v\"/> POST"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "preference \"$'\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "PRE ![one](u) MID ![two](v) POST"
+      },
+      "preferences": {
+        "imageWidth": "$'"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "PRE <img width=\" MID ![two](v) POST\" alt=\"one\" src=\"u\"/> MID <img width=\" POST\" alt=\"two\" src=\"v\"/> POST"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "preference \"$01/$02/$03/$00/$10/$12/$20/$23/$99/$0/$\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "PRE ![one](u) MID ![two](v) POST"
+      },
+      "preferences": {
+        "imageWidth": "$01/$02/$03/$00/$10/$12/$20/$23/$99/$0/$"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "PRE <img width=\"one/u/$03/$00/one0/one2/u0/u3/$99/$0/$\" alt=\"one\" src=\"u\"/> MID <img width=\"two/v/$03/$00/two0/two2/v0/v3/$99/$0/$\" alt=\"two\" src=\"v\"/> POST"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "preference \"$$$&$1$2$`$'$\"",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "PRE ![one](u) MID ![two](v) POST"
+      },
+      "preferences": {
+        "imageWidth": "$$$&$1$2$`$'$"
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "PRE <img width=\"$![one](u)oneuPRE  MID ![two](v) POST$\" alt=\"one\" src=\"u\"/> MID <img width=\"$![two](v)twovPRE ![one](u) MID  POST$\" alt=\"two\" src=\"v\"/> POST"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "preference true",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "PRE ![one](u) MID ![two](v) POST"
+      },
+      "preferences": {
+        "imageWidth": true
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "PRE <img width=\"true\" alt=\"one\" src=\"u\"/> MID <img width=\"true\" alt=\"two\" src=\"v\"/> POST"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "preference false",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "PRE ![one](u) MID ![two](v) POST"
+      },
+      "preferences": {
+        "imageWidth": false
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "PRE <img width=\"false\" alt=\"one\" src=\"u\"/> MID <img width=\"false\" alt=\"two\" src=\"v\"/> POST"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "preference 0",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "PRE ![one](u) MID ![two](v) POST"
+      },
+      "preferences": {
+        "imageWidth": 0
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "PRE <img width=\"0\" alt=\"one\" src=\"u\"/> MID <img width=\"0\" alt=\"two\" src=\"v\"/> POST"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "preference 0",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "PRE ![one](u) MID ![two](v) POST"
+      },
+      "preferences": {
+        "imageWidth": 0
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "PRE <img width=\"0\" alt=\"one\" src=\"u\"/> MID <img width=\"0\" alt=\"two\" src=\"v\"/> POST"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "preference 1e+21",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "PRE ![one](u) MID ![two](v) POST"
+      },
+      "preferences": {
+        "imageWidth": 1e+21
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "PRE <img width=\"1e+21\" alt=\"one\" src=\"u\"/> MID <img width=\"1e+21\" alt=\"two\" src=\"v\"/> POST"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "preference 1e-7",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "PRE ![one](u) MID ![two](v) POST"
+      },
+      "preferences": {
+        "imageWidth": 1e-7
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "PRE <img width=\"1e-7\" alt=\"one\" src=\"u\"/> MID <img width=\"1e-7\" alt=\"two\" src=\"v\"/> POST"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "preference 9007199254740992",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "PRE ![one](u) MID ![two](v) POST"
+      },
+      "preferences": {
+        "imageWidth": 9007199254740992
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "PRE <img width=\"9007199254740992\" alt=\"one\" src=\"u\"/> MID <img width=\"9007199254740992\" alt=\"two\" src=\"v\"/> POST"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "preference {}",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "PRE ![one](u) MID ![two](v) POST"
+      },
+      "preferences": {
+        "imageWidth": {}
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "PRE <img width=\"[object Object]\" alt=\"one\" src=\"u\"/> MID <img width=\"[object Object]\" alt=\"two\" src=\"v\"/> POST"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "preference {\"toString\":null}",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "PRE ![one](u) MID ![two](v) POST"
+      },
+      "preferences": {
+        "imageWidth": {
+          "toString": null
+        }
+      }
+    },
+    "expected": {
+      "status": "error",
+      "calls": []
+    }
+  },
+  {
+    "name": "preference [{\"toString\":\"invalid\"}]",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "PRE ![one](u) MID ![two](v) POST"
+      },
+      "preferences": {
+        "imageWidth": [
+          {
+            "toString": "invalid"
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "error",
+      "calls": []
+    }
+  },
+  {
+    "name": "preference [\"a\",null,[\"b\",null]]",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "PRE ![one](u) MID ![two](v) POST"
+      },
+      "preferences": {
+        "imageWidth": [
+          "a",
+          null,
+          [
+            "b",
+            null
+          ]
+        ]
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "PRE <img width=\"a,,b,\" alt=\"one\" src=\"u\"/> MID <img width=\"a,,b,\" alt=\"two\" src=\"v\"/> POST"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "preference [1,true,{}]",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "PRE ![one](u) MID ![two](v) POST"
+      },
+      "preferences": {
+        "imageWidth": [
+          1,
+          true,
+          {}
+        ]
+      }
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "PRE <img width=\"1,true,[object Object]\" alt=\"one\" src=\"u\"/> MID <img width=\"1,true,[object Object]\" alt=\"two\" src=\"v\"/> POST"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 0",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": ""
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 1",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![](x)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"\" src=\"x\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 2",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![](x)![b](y)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"\" src=\"x)![b](y\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 3",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "pre ![a](x) middle ![b](y) post"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "pre <img width=\"300\" alt=\"a\" src=\"x\"/> middle <img width=\"300\" alt=\"b\" src=\"y\"/> post"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 4",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x(y))"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a\" src=\"x(y)\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 5",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x)![b](y)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a\" src=\"x)![b](y\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 6",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x))tail)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a\" src=\"x))tail\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 7",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x y)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 8",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a]()"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 9",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a]oops](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a]oops\" src=\"u\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 10",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x) ![bad]() ![c](z)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a\" src=\"x\"/> <img width=\"300\" alt=\"bad]() ![c\" src=\"z\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 11",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a ![b](c)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a ![b\" src=\"c\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 12",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x\n) ![b](y)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "![a](x\n) <img width=\"300\" alt=\"b\" src=\"y\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 13",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a\nb](x)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 14",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a\rb](x)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 15",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a b](x)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 16",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a b](x)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 17",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![ab](x)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"ab\" src=\"x\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 18",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a\u000bb](x)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a\u000bb\" src=\"x\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 19",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![😀中文](https://例え.test/😃)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"😀中文\" src=\"https://例え.test/😃\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 20",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![\"<&>](javascript:evil())"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"\"<&>\" src=\"javascript:evil()\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 21",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "\\![escaped](x)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "\\<img width=\"300\" alt=\"escaped\" src=\"x\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 22",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](xy)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a\" src=\"xy\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 23",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x᠎y)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a\" src=\"x᠎y\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 24",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x\ty)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 25",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a\tb](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a\tb\" src=\"u\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 26",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x\ny)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 27",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a\nb](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 28",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x\u000by)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 29",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a\u000bb](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a\u000bb\" src=\"u\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 30",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x\fy)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 31",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a\fb](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a\fb\" src=\"u\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 32",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x\ry)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 33",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a\rb](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 34",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x y)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 35",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a b](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a b\" src=\"u\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 36",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x y)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 37",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a b](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a b\" src=\"u\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 38",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x y)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 39",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a b](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a b\" src=\"u\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 40",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x y)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 41",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a b](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a b\" src=\"u\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 42",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x y)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 43",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a b](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a b\" src=\"u\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 44",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x y)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 45",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a b](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a b\" src=\"u\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 46",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x y)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 47",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a b](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a b\" src=\"u\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 48",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x y)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 49",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a b](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a b\" src=\"u\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 50",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x y)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 51",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a b](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a b\" src=\"u\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 52",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x y)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 53",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a b](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a b\" src=\"u\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 54",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x y)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 55",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a b](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a b\" src=\"u\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 56",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x y)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 57",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a b](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a b\" src=\"u\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 58",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x y)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 59",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a b](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a b\" src=\"u\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 60",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x y)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 61",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a b](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a b\" src=\"u\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 62",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x y)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 63",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a b](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 64",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x y)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 65",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a b](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 66",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x y)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 67",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a b](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a b\" src=\"u\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 68",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x y)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 69",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a b](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a b\" src=\"u\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 70",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x　y)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 71",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a　b](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a　b\" src=\"u\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 72",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x﻿y)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 73",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a﻿b](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a﻿b\" src=\"u\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 74",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](xy)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a\" src=\"xy\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 75",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![ab](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"ab\" src=\"u\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 76",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x᠎y)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a\" src=\"x᠎y\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 77",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a᠎b](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a᠎b\" src=\"u\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 78",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a](x​y)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a\" src=\"x​y\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "regex 79",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![a​b](u)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"a​b\" src=\"u\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 0",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "a)\na\n](aa a[\n]😀]( ))))  !]()[)!["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 1",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "!)]a😀)😀a\n![x[))😀😀\na\n]]😀😀x](![ a"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 2",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "](😀 ] a[ [ ]())[ [\na \n😀a![[!)![]("
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 3",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "](x !) [😀  [![[xa😀😀](! ](])x))😀]"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "](x !) [😀  [<img width=\"300\" alt=\"[xa😀😀](! \" src=\"])x)\"/>😀]"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 4",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "](! [ aax](x![😀 x!\n![ ]) )[](](x](]"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 5",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "])\n]( )](]](])](])x  x![a]😀 x![a\n!["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 6",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]([)[ a!x\nx 😀]]aa  a   )\n)](  "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 7",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "😀]( \na!😀![\n ![x[a])aa   !😀[](["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 8",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "\nx! [![a)![![\na😀[😀!😀))[\n]( ]()\nx!["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 9",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " \n![  ][![![😀ax\n![\n! ](😀) [![]![\na ]("
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 10",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "[](])aaa]](](![😀 ![]![x !😀 x![ \n\n "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 11",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "a]( 😀\n😀]!![ ![aa  \n]([\n]([ xx"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 12",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![!)![![](\n\n😀![\n\na😀[! [)![😀)x \n[!x"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 13",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "\n)![ ]([\n ![😀😀😀](\n[x [😀![a[]😀\n)]("
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 14",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "!] x)😀xa😀[ \n 😀a[ \n)]a[😀a😀[ 😀a"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 15",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "\n)]( x😀![\n[x]😀x]))\na)  )x]\n"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 16",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "x\n ]\n[ [) 😀][ xa] ](x!![ ](![![![!)x"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "x\n ]\n[ [) 😀][ xa] ](x!<img width=\"300\" alt=\" \" src=\"![![![!\"/>x"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 17",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "a][][![\n😀 ![ !ax[![ a![  😀 😀) !]()"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 18",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "😀!![ ]x[x ](a]](a!xa)!!]])a![!\n"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "😀!<img width=\"300\" alt=\" ]x[x \" src=\"a]](a!xa)!!]]\"/>a![!\n"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 19",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![)]( x)](]😀 ]x) \n😀]()](aa x😀a]xx"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 20",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "😀]x](!\n)](][![ax]) ]]( ]]( !)a](a]("
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 21",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]!![![](  )😀 😀  )😀! )![]\n![\n!😀😀\n"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 22",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "😀)[]![!![ ])][  x 😀[ ![)]![)!"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 23",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " )\n )](]]))]]]( !\n\n \n) ](😀[😀![😀😀"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 24",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " ] ]😀😀  a])a\n)[[a![[😀x!! aa!\n"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 25",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " !]a![x])ax[[\n[😀 ](x [)! )a]"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 26",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " ![![\n![!  ]](😀[)\n![x]]a[aax😀😀 a "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            " ![![\n<img width=\"300\" alt=\"!  ]\" src=\"😀[\"/>\n![x]]a[aax😀😀 a "
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 27",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "\n[😀[[a))😀](]()ax!](   \na](!x![](😀"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 28",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "[x !][](😀😀[ a  ](😀[![\n\na\n[ [ ]"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 29",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " [a [![!😀x\n a)]( a![) x]x](a\n]]  "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 30",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "](a\n ](a]xa![😀[ 😀!)x]( ]( [!  \n](a "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 31",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]a](! ]([[ \n x!]([a\nx😀😀😀 ! ](a ["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 32",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": ")![😀😀[)) x)😀](](\n   [](x ](![a![\n![😀"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 33",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " [ aa[ ![](\n[  ![x](x![\n) )x\n] ![!a"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 34",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "xx]x![[[\n  ]\n[a \nxx]a![]())]()"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "xx]x![[[\n  ]\n[a \nxx]a<img width=\"300\" alt=\"\" src=\"))](\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 35",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "😀a😀)😀![[![)![😀!!!😀](x😀[[[! ![](]![ "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 36",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]\n!a)a![😀](]( ![ \n\n](😀\n     😀][)]"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 37",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]([😀] \n](![😀![a))x\n](!\n\nx ] xx]!😀"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 38",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "\n[axa[\n](![ ](![ ](xa \n](a)\n)][ ]a\n"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 39",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![![ ]])![x!a](aaa[![😀![](xx\na\n["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 40",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "x\n😀]![a\n][[aa]]](\n[![ x\n😀](😀](]a😀"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 41",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "😀 a![![\n![!![[)\n)![x😀)x]( \n![ax![![!"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 42",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "!)ax !😀 x ]a![ a!😀  )\n)]a"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 43",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "  ] !a![](][\n\n \n\n😀x [\n![ [ ![ a😀"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 44",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "a\n!ax\n\n!]xxa]\n😀 a!! [x) ]a](]("
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 45",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "[![\na ](😀)] [](😀a![]a😀xa]!x😀)😀😀 "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 46",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "[![![) \n]\n![](😀]]!](](![a]()a!\na\n!!! )"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "[![![) \n]\n<img width=\"300\" alt=\"\" src=\"😀]]!](](![a](\"/>a!\na\n!!! )"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 47",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": ")] ]😀😀a! []( a  ](a a!]([  ]\n!a"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 48",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![ )a😀](![ ](\n\na][😀]]😀a](axax x](![a"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 49",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " ](  ]a! ![]([a)! 😀a\na😀[](\n😀))\n\n "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            " ](  ]a! <img width=\"300\" alt=\"\" src=\"[a\"/>! 😀a\na😀[](\n😀))\n\n "
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 50",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " \n ](] ]] ) !])] [xxx  xx😀]( ]("
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 51",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "a😀![]a] ](  !!](](x a\n\n😀\n]![])"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 52",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "[!aa[![[[\nx\n\n )\nx!]\n ![ ](]())"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "[!aa[![[[\nx\n\n )\nx!]\n <img width=\"300\" alt=\" \" src=\"]()\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 53",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![]( x😀aa a)![!\nx![!]![ 😀\n!x😀😀! "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 54",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]](a )]](x)a😀a\n])x]]😀](!a😀 !a\n[!"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 55",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![ ![[[)[]]xxa)x[)!! 😀 ](![](a]()"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\" ![[[)[]]xxa)x[)!! 😀 \" src=\"![](a](\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 56",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "](x[ )]![](\na]()](a]😀 [[axx😀\n[ ![["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 57",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "aa!![😀[![)   ]] \n ) [😀😀](!["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 58",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "😀) ]( \n [ !\n![x)][ !x](a a)![![["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 59",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "x](a   ]a]\n  [  ](😀ax](😀 ![x😀))"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 60",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "a)![a]()[x 😀[!]( ](]x!a![ 😀 \n\n😀!"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 61",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "\n😀!x![a  )!!!a \na) ) ](!!](x!["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 62",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "\na![) x😀!![!aa!]  ]a ![)[[😀😀)!a] "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 63",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "](😀x😀] aa [x)](] xx ![x \n![[a!]("
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 64",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "  😀x\n!)[x !) ]😀!😀😀[   ) ![😀]( "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 65",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "](]](![!]![)]] x !a[![!![ax ![😀 ](](\n"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 66",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![[x😀![x \n)a[\n)x ![![[xa![x😀x[]😀"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 67",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![![]()!😀a😀])[\n![ ]![ )[](!  😀)😀![\na"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"![\" src=\")!😀a😀]\"/>[\n![ ]![ )[](!  😀)😀![\na"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 68",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]!]()x\n xx)](![![!)![a)x😀[ [)\nx![]( "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 69",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "] a![a[\n😀![[x \n😀x😀ax](](a![\n)x😀  "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 70",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "[😀[![![[ a😀)a\n[ )😀 [ [![  ](]xxa😀"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 71",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "😀![] 😀!😀😀😀!😀\n😀]([[![a]\n](a]a)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 72",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]!a😀!😀 )\n\n!]]\nx😀]()!x [😀x ](\n\n"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 73",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "](![x](\n](!]\n\n)![[\n![x\nx! )]] \n] 😀!"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 74",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]] )![[a])](![a 😀![a!!]! \n]\nxa[)["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 75",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "x )![a![]!\n)\n[  😀]\n😀 !![a!](](]([\nx"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 76",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![]![😀a😀\n ! !a\n]]xax]()\n]x"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 77",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "](!!aa😀](a]]😀😀x![ \n[[  😀][[ )!]  "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 78",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "[]](![x😀!](!x)😀😀ax\na\n![ 😀]()a[ aa![ "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "[]](<img width=\"300\" alt=\"x😀!\" src=\"!x\"/>😀😀ax\na\n![ 😀]()a[ aa![ "
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 79",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![😀x[](]![]([ 😀[ ]([ ](😀)!![] !😀]😀!"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"😀x[](]![]([ 😀[ ]([ \" src=\"😀\"/>!![] !😀]😀!"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 80",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "](]![)![😀](](a]]! !x[ \na[xx )]xx"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 81",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "[[[😀![[![![😀 a!]  x😀](a[😀aa😀  😀](]("
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 82",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "xx![😀 [😀[ 😀[😀)]( ![]xa \nx[ a ]]( "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 83",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": ")![ xxx😀]\n![😀] a\n\n![](![ a![![x]  ](\n!"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 84",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " !]()![\n]( x[) 😀!)😀\n]()x  []())😀! "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 85",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "  a\n!))  ]x\n[[!])😀 ](](😀!a](😀 "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 86",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "[\n !![](😀a![![ ]a][😀\n!!x\na  x]] !"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 87",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "\na![]](x ]]](\n]x ![]😀[![a\n\n![](\n  \n"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 88",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": ") a!x)x)a]]]](](😀😀a!]() \n](](😀  "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 89",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "😀](😀![)aa )😀a]\na\n\n][\nx\na]( ![😀\n]"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 90",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " )😀 [a)x x[]a]([😀 [x![]😀)](](]!"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 91",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]([ ]()x) ![[![  [![)a]a😀 ![ ](["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 92",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "](x!x))]) [ )a )\n[ ![ ]\n]  [["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 93",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]x\n ]\n😀 )😀]())[]!]x[!!)![[)x]!"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 94",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "\na !a)] ] \n  ]😀)\n[😀[)[ 😀 a](](!"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 95",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "\n!\n)]]([) [😀]😀]![x]😀 ](a😀 \n ![😀["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 96",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "x 😀![](😀 ![!x]x]😀![😀 xxxa😀x)!!"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 97",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": ")!]]😀![xa![😀!](\n](!😀a a[]([a😀]a[)😀"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 98",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]![x a[😀)[\n]!a]()   !\n! !]a][\n"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 99",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " [[ 😀 \n\n))!😀]() ](]]x)]\n)))] ["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 100",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "  😀![ 😀x😀\nx](😀!]( []](! \n)a)](x"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 101",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "a[](😀])a!![ ]\n\n](\n][  ](![x]([!["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 102",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " [a]😀x\nxx)ax[! \n)a !)![]!x![ "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 103",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "x![a😀][) x)]x![  !x\n![😀])](! [)![ !["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 104",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " !x😀😀!aa](😀[![![!![](😀!!  \naa\n 😀 "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 105",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "!!](!]😀![x](\n] 😀[)) [![ x)![x]( x"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 106",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "[![x[[![](] ]x\n)]\n😀x!\n😀a[[[ !! a"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 107",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]  ![\n! ![\n\nx](x [\n![]()a\na\n ![[😀\n😀]"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 108",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " )]( x\n[😀😀😀![!)](]](a ]x![a!![ [😀 \n"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 109",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![![![![ ]😀]  )x![](]x ] ![](]![]!)]("
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"![![![ ]😀]  )x![](]x ] ![\" src=\"]![]!\"/>]("
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 110",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " \n)]]]( )![![ [ 😀aa  ]]\n😀 [["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 111",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " 😀😀x[x)]!xx] \nax a 😀]\n\n)\n!["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 112",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " [![]xx](\n [  a]]😀a ]( a😀 ![![ ax["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 113",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "a  x![![[](\n[]](a 😀\n😀😀) a![😀!  "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 114",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": ")a! !](😀 x])]a]a]xx a😀]a x "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 115",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "x](]x  \nx!a\n  ] x \n]![😀\nax x"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 116",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "](aa[)\nx![\n x![[x!!😀]](x!x]() !"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "](aa[)\nx![\n x<img width=\"300\" alt=\"[x!!😀]\" src=\"x!x](\"/> !"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 117",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "!]([[x![\n]([]😀)x![\n[a ]xaax["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 118",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " 😀] 😀  😀😀 ](]  ![[] \n)a)]![]()!["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 119",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "! x😀![😀 )!])\n![ ]😀 😀](  ]( a)]"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 120",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "[]a\n\n![]x\n!])\n](]x![ !](x) !x "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "[]a\n\n![]x\n!])\n](]x<img width=\"300\" alt=\" !\" src=\"x\"/> !x "
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 121",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "[\n![ \n😀!![![ )]](x [[x😀]x)   aa "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 122",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "a)](x[!😀)!](😀x![ !]! \n) a\n [)x"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 123",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": ") a  [😀 x)]] xx]  ][![ 😀]!]\n😀"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 124",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "](a\n]( 😀![ x!x] ]😀\nx😀x![!!\n)]! \n!"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 125",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " ](]]( ] \n](!)\n ]x![) ![](a!x]]( "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 126",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "  !xaa\n ]![) [\n😀\n\n![ ](  😀 a! "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 127",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "[[)]   a]   ![! a\n\n](  ]([]]][😀"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 128",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "😀) ]( [😀[)]x](]()😀]) \n ]  \n!x![! !"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 129",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "a](\n![  ![\n  a]\n😀 ][![][ x \n "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 130",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " ![x](a!](😀!😀 )a\n]😀x!]😀 ]()] \n]"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 131",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "!)x![[ x a [ \n]( ](a \n](x )😀!  ![]"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 132",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![![) !\n))![][])[][x) a ]  x 😀"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 133",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " a😀\n😀![[ 😀a \n]x !  \n[[😀![)😀!]("
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 134",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": ")ax\n]\n)😀![ [)]![!\n😀 )\nx![x![!a["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 135",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "[ ! \n\nx\n] [ \n)![😀 😀]( ! ]](x![]a"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 136",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "😀a![a![]  😀](a](x !)xx] x ]([😀[[["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 137",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": ")!aax]()x😀  ![![\na]😀 ]](a! ](😀![\n"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 138",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " )!! 😀😀]()]([]()) ax]([]) !aa ](x"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 139",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " [![\n)]](\n)![xx![!😀](![!![[xxa](](!))"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            " [![\n)]](\n)<img width=\"300\" alt=\"xx![!😀\" src=\"![!![[xxa](](!)\"/>"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 140",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "a]]a  a ](!xa ![ xax ![!😀![😀](![xx](😀"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 141",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "a[   a![])](![]!ax [  !!)😀aa\n "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 142",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "!![a](a![](] xaa ![]][)]]()[x![!) !"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "!<img width=\"300\" alt=\"a](a![](] xaa ![]][)]\" src=\")[x![!\"/> !"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 143",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "xxx!😀 a)](\n\n😀😀![[xx)😀)!x😀](😀😀)]"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "xxx!😀 a)](\n\n😀😀<img width=\"300\" alt=\"[xx)😀)!x😀\" src=\"😀😀\"/>]"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 144",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "xa)aa)😀\n![!] )]] a\naaa])![x  "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 145",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![![ ![][ 😀 ](x]😀![[) x)a![](x)](\n😀"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"![ ![][ 😀 \" src=\"x]😀![[\"/> x)a<img width=\"300\" alt=\"\" src=\"x\"/>](\n😀"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 146",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "\n)  ]a!xax \n![\n) ![ ]😀![![![]a"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 147",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]( ![ \n ))[[😀 ! )](]([]( x ) a[ a"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 148",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "😀x[\n!😀](a😀 !😀😀x\n!😀 !]( ]])](] a"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 149",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]()![😀][](](x\n😀)!😀![x😀  !!](a]xa](a"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 150",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]](![]]😀]( ]\n](  \n]! \n\n))![ax ]("
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 151",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "!!![]\n]([](😀![x![](x!😀\n]](a\n]([a](["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 152",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " a )](\n![ )]](x![)]( 😀]x]a😀)!)😀)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            " a )](\n<img width=\"300\" alt=\" )]\" src=\"x![\"/>]( 😀]x]a😀)!)😀)"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 153",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "ax😀a![](!)\n😀![)) a][x[]!!x😀[😀!"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "ax😀a<img width=\"300\" alt=\"\" src=\"!\"/>\n😀![)) a][x[]!!x😀[😀!"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 154",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "! ])\n😀 [\n]]( !a!  ![ )]!]😀"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 155",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " ](😀x](![]))😀a a   x  xx 😀![]( \n]( "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 156",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": ")x)!a😀x)![ 😀xa😀😀 x](]😀😀] 😀])\na"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 157",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " ![![!\n )😀[\n](x  \n  a😀 ](\n\n![a! "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 158",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "x](]a\n\na]\n \n[a😀xax\n😀]a[)[]😀x"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 159",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "](😀\n😀)a ](😀 \n😀a  x!xa[)[!a[😀]x)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 160",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " ](x)]]x )![!\n]x! [  [!\n![![!\n "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 161",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]]![x]!\n a ]xx\n!]([)](a![!a! ]( "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 162",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "](![)a]a a](\n [\n)]]]!) )a😀\n"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 163",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "!x😀[ 😀aaa[](![  😀](![😀\n[[ ) !\n!ax"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 164",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]\n[x 😀[)]() ]😀a[x]]x 😀 😀)]a "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 165",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "😀a](]!x![]( [](\na x][)![\n)x)]😀 )"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 166",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "!a![)a )x a][a\n!])!! ](][xxa](]("
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 167",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]( ax![\n[a]😀]😀)[ ![a]) xx\n😀)\n x"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 168",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " ](a   []() )]\n!a\n\n[]( ![ axx\n 😀"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 169",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "!](a ])😀![x a😀![😀](]()\n ] ](  ! ax"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "!](a ])😀<img width=\"300\" alt=\"x a😀![😀\" src=\"](\"/>\n ] ](  ! ax"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 170",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![]x]([x ])![\n[](😀aa[a[😀![x!a\n!](] "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 171",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " ] a !a\nxxa  😀](xaxax😀 [!]( )"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 172",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "\n[ \n x](\n!![  a!!](\na)![a)a a![a"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 173",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]!xx!!😀]()[x )](x [  x[])x[) "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 174",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "](aa\n a![\n[ ](]xx😀aa](![[\n]([![\n!x"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 175",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "a][[a](a ](]x](😀](](])[ )😀 ](😀![😀[  "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 176",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "] \n[a!]😀)a ](😀]( x😀a](!a😀 )]( )xx"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 177",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "😀[😀 \n]x  [[\na😀xa!a! ]\na ![](]\n😀]"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 178",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "a]x![ ![\n]\n](😀)😀![😀\n](\na ][a![![](a😀\n"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 179",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "\n\n ]😀[]]![[ ](x [ ](xa\n😀   \nx "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 180",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "[!\n![![[![!😀 [)x] ] \n😀[ )![](\nx"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 181",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "x!!)]x!   [😀])x!x)) [😀)a[😀\n"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 182",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " ]x😀!\n[!))]][!xxxxx!\naaaaa["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 183",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " \naa !\n!]!)a]  [ [a)x \na[ "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 184",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "!\na))!a![![ ](]( )![[]a \n[  ![[![a😀"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 185",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "[[! ) a[\n!](])][! a))![) \n)]😀\n]\n"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 186",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "xa![ )!](😀![ ]!![]]( ](a😀![[😀) )  []!"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "xa<img width=\"300\" alt=\" )!](😀![ ]!![]]( \" src=\"a😀![[😀\"/> )  []!"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 187",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " 😀](\n[[ ![ax![![ ](😀!x]())! ]😀[   )"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            " 😀](\n[[ <img width=\"300\" alt=\"ax![![ \" src=\"😀!x]()\"/>! ]😀[   )"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 188",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " 😀](!)a![x !a [a) ]([[x\n![[😀 a![[a"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 189",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " xa])\n]\n  ])[!! a](x![ a ]x ](\nx\n"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 190",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "] ]x))\n😀! ](\nx a[\nx![a)[[x😀x[\n😀["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 191",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![![😀x]!😀[\n](!!x ](]xa[))x]a]] ![x😀"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 192",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " ![  [\n[aa[[[](] \n!😀\nx [😀[](]"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 193",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " [\n!!)\n![ )](![)]\na a!!]()]a )\n) "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            " [\n!!)\n<img width=\"300\" alt=\" )\" src=\"![\"/>]\na a!!]()]a )\n) "
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 194",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "a[😀 a)[ )  ![[ x!\n!  [\n 😀😀😀x"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 195",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]](]) !![! !😀😀 ]a](aaxx![)](😀]([]("
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "]](]) !<img width=\"300\" alt=\"! !😀😀 ]a\" src=\"aaxx![\"/>](😀]([]("
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 196",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "😀 ] a)!x](  [!!xx](](](x \n![ax a ["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 197",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "] ) \nx\n])!x![)![]a ![!] ! x)!!!"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 198",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]( 😀x![\n)!](\n \n![x[)](😀\n])😀![)])](x"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 199",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]()]([a]]!x😀😀a)😀](]([))\na  ![]a)![!"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 200",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "](!x![![ 😀\n [](![ ][ ]( ax😀x\n](]()\n "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 201",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "!![ a!]😀😀![\n)a \n!😀!x  )](\n😀 )](!["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 202",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "😀![\n\n]()[![😀 x😀\n](aaa!😀](]]])!![)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 203",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]]\n!\n![!! x😀\na)![![ ](😀!)](x [x](]("
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "]]\n!\n![!! x😀\na)<img width=\"300\" alt=\"![ \" src=\"😀!\"/>](x [x](]("
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 204",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "x[![[)](]\n😀]  ![ ax😀\nx![😀]] ![)\n!\n\n"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 205",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "[ ]( \n x!![) ![x!!  xx[)!)😀 ] 😀]"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 206",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "\n]xx[![😀]a](  😀]( \n\n)]( x]😀](](](😀!["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 207",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![ 😀]] ))[)a)](😀](x](a](x](a ![ 😀x!)"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 208",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "x] x )! [](]](![) !😀a](x ![](! x![x]("
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 209",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![!]]( ![ !\na[ )]\n)x[ a\n)\n\n[)]"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 210",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]]![ ![!![)[\n][x!![!aax \n[ ]()![]("
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 211",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "!]())[!]x😀 !![ 😀!😀![😀](](!](x[😀ax!["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 212",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": ")\n])x ]]](a! ](!](!](](![a[\nx😀xx\n"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 213",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "[)😀![[]( xx[ \n])))😀\n]😀](x\na\n "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 214",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "!)]([)\n)]  😀![](ax]! ] a [![x  ]("
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 215",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "a\n x])!]( ![![!😀!![)  )[[![](!\n]("
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 216",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": ")![ a![![![xxx \n)  []() a )a !])![a"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 217",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]a]  )😀 ] )!]x]([\n]]  ![![x![] "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 218",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "](]( ] \n![[)![!!]( \n😀   !  a "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 219",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]    )!x\n[x ](ax![]] !😀x! ])\n"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 220",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "x!]()![![😀!]( ]😀!]( ](![! ](]a\n\n 😀😀]("
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 221",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": ")!😀xa\n!x😀[\na\n\n x!!\n\n](x😀😀]]("
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 222",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " !!a  )]](](!![\n ![x aa](] ]\n[)x) "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 223",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "😀](!\n][!)  !](a!![](]![[![😀]\nxa😀[a"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 224",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![x)!😀 !](!](!!)x ![ ![)\n)](\n![](\n]( !"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "<img width=\"300\" alt=\"x)!😀 !\" src=\"!](!!\"/>x ![ ![)\n)](\n![](\n]( !"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 225",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " 😀![]!!xa]([)\n😀a![[)!![😀  a😀][)😀"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            " 😀<img width=\"300\" alt=\"]!!xa\" src=\"[\"/>\n😀a![[)!![😀  a😀][)😀"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 226",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "![\n]( )😀![[ ](\n😀]( ![\na x 😀!)x[a![)]("
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 227",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "😀[😀a![  😀![a!a](!! )x![ \n    😀😀😀"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 228",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]!!)![😀[\n[\n!!]([axx[[] ! a ["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 229",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "ax][ ])[)![]![](![ x![a![[])!😀!x] "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 230",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "a![)\n] !]( \nx!!x😀)  x] ]a) x]("
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 231",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "!)](] x !x] ![]😀!a \n])!😀![ 😀\n😀"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 232",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "[[\n x😀x](axa😀![)]x] x ![\n)ax \n\n\n"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 233",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "[😀)]x](][\n]([]a[]aa![\na!](😀 "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 234",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " ]\n\n😀![\n[😀😀![x a x[]\n! )\n!\n😀![)a"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 235",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]!![\n](a!x😀x😀](!]a![x\na![]]]( \n 😀a "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 236",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "😀😀) a\n] ]]😀!]]😀😀 !!😀![) x!](![\n"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 237",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " )\n] [))!😀 [![![ ![ ![!a[\n!)😀😀["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 238",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "😀](![](😀 ]([  [](x![x)!x![] ](😀!x](😀!["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "😀](<img width=\"300\" alt=\"](😀 ]([  [\" src=\"x![x\"/>!x![] ](😀!x](😀!["
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 239",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "!]]][😀 [\na😀!](! \n[  xxx ) )) "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 240",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " \n ]][\nxa\n! !!![!)[😀![)]a  😀"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 241",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "!x![)😀xa\n](]([![]] \n😀]))\n![])!](!["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 242",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "😀 \n!![)![a  ]a a)ax\n))!\n\n!😀[\n"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 243",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": " !![😀)](😀\n x]])![ [) ]! )a\n ]"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 244",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": ")!a[)😀](a!a a \nxaa![ ![!![]()\nx )"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            ")!a[)😀](a!a a \nxaa<img width=\"300\" alt=\" ![!![\" src=\"\"/>\nx )"
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 245",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]( [a\n[aa[]😀!](😀]![![x😀](!)]![ ]("
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "ok",
+      "calls": [
+        [
+          "core:platform:paste-text",
+          [
+            "]( [a\n[aa[]😀!](😀]<img width=\"300\" alt=\"![x😀\" src=\"!\"/>]![ ]("
+          ]
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 246",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "😀[!])x) )![x](![😀]! [ 😀x \n \n "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 247",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "😀](xa a ![\n]x)  )x![![a! a[a !!["
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 248",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "]a![)]x !!](![](](x] !]x  x😀!a "
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  },
+  {
+    "name": "grammar 249",
+    "payload": {
+      "argumentValues": {
+        "markdownImage": "😀 a ]😀 😀![] )a![](!![xa](](\na"
+      },
+      "preferences": {}
+    },
+    "expected": {
+      "status": "error",
+      "calls": [
+        [
+          "core:platform:selected-text",
+          []
+        ],
+        [
+          "clipboard:read",
+          []
+        ]
+      ]
+    }
+  }
+]

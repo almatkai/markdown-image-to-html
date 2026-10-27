@@ -1,0 +1,123 @@
+[
+  {
+    "file": "tests/fixtures/beta/common.rs",
+    "repository": "https://github.com/almatkai/Tezbar",
+    "commit": "fd300e276356587726566026f072563eb9c34cb1",
+    "path": "src-tauri/src/native_core/common.rs",
+    "sha256": "280a0a2f0dd04a8570b320aafc0c3ece0f5de8ddb21c363645567d6a35d84da7",
+    "license": "Apache-2.0"
+  },
+  {
+    "file": "tests/fixtures/beta/v2_sdk.rs",
+    "repository": "https://github.com/almatkai/Tezbar",
+    "commit": "fd300e276356587726566026f072563eb9c34cb1",
+    "path": "src-tauri/src/native_core/extensions/v2_sdk.rs",
+    "sha256": "4f987346f863db9a7bd6aa1d5a99e149925dc69a44d629727ccc80a567cd27c2",
+    "license": "Apache-2.0"
+  },
+  {
+    "file": "tests/fixtures/beta/extension-v2.schema.json",
+    "repository": "https://github.com/almatkai/Tezbar",
+    "commit": "fd300e276356587726566026f072563eb9c34cb1",
+    "path": "schemas/extension-v2.schema.json",
+    "sha256": "6d5afda1b652605982104bdf16d1547547b98dfd707a7b2969316406c49f32af",
+    "license": "Apache-2.0"
+  },
+  {
+    "file": "tests/fixtures/beta/NATIVE_V2_FORMAT.md",
+    "repository": "https://github.com/almatkai/Tezbar",
+    "commit": "fd300e276356587726566026f072563eb9c34cb1",
+    "path": "docs/NATIVE_V2_FORMAT.md",
+    "sha256": "8bf9315ad047326dd6737587ca5491fc35faf5e3f92a2d9c63f596be0c8f7b7a",
+    "license": "Apache-2.0"
+  },
+  {
+    "file": "tests/fixtures/beta/v2_runtime.rs",
+    "repository": "https://github.com/almatkai/Tezbar",
+    "commit": "fd300e276356587726566026f072563eb9c34cb1",
+    "path": "src-tauri/src/native_core/extensions/v2_runtime.rs",
+    "sha256": "df96675ba916a3d70b8e0e5da76f7a9422d238cc3fbe3a5a6178fef21662a6a0",
+    "license": "Apache-2.0"
+  },
+  {
+    "file": "tests/fixtures/beta/native.rs",
+    "repository": "https://github.com/almatkai/Tezbar",
+    "commit": "fd300e276356587726566026f072563eb9c34cb1",
+    "path": "src-tauri/src/native_core/extensions/native.rs",
+    "sha256": "3192be6beccc110cd6daa22db412e0f90685957ec51b3c71103b78e239978691",
+    "license": "Apache-2.0"
+  },
+  {
+    "file": "tests/fixtures/beta/platform.rs",
+    "repository": "https://github.com/almatkai/Tezbar",
+    "commit": "fd300e276356587726566026f072563eb9c34cb1",
+    "path": "src-tauri/src/native_core/platform.rs",
+    "sha256": "75fa7ce4204edbbdb0f4a5410895b32239939b707256c484dc3c4f9de390b5a1",
+    "license": "Apache-2.0"
+  },
+  {
+    "file": "tests/fixtures/beta/clipboard.rs",
+    "repository": "https://github.com/almatkai/Tezbar",
+    "commit": "fd300e276356587726566026f072563eb9c34cb1",
+    "path": "src-tauri/src/native_core/launcher/clipboard.rs",
+    "sha256": "b76fc181e2685d5025a117fc2b53d8c166dc32cdded4651359d42c5bb78a6706",
+    "license": "Apache-2.0"
+  },
+  {
+    "file": "licenses/Apache-2.0.txt",
+    "repository": "https://github.com/almatkai/Tezbar",
+    "commit": "fd300e276356587726566026f072563eb9c34cb1",
+    "path": "LICENSE",
+    "sha256": "0ed6b1b2760294d4aaaa45be38e166fcc0168e1dd5190423c096fcbe1c94afbf",
+    "license": "Apache-2.0"
+  },
+  {
+    "file": "tests/fixtures/v1/index.ts",
+    "repository": "https://github.com/almatkai/markdown-image-to-html",
+    "commit": "54ce6a02c3e7f4aa75d1b3efa6af08d667673d55",
+    "path": "src/index.ts",
+    "sha256": "f1fd894843c09b456327322621fb7e3a9721865ed1696cc0fa137a8f8b886f21",
+    "license": "MIT"
+  },
+  {
+    "file": "tests/fixtures/v1/package.json",
+    "repository": "https://github.com/almatkai/markdown-image-to-html",
+    "commit": "54ce6a02c3e7f4aa75d1b3efa6af08d667673d55",
+    "path": "package.json",
+    "sha256": "f058b26d95c1be6b111769e9bc36167740cd8b0cee1252a3ab5a084a47ac8788",
+    "license": "MIT"
+  },
+  {
+    "file": "licenses/own-V1-LICENSE",
+    "repository": "https://github.com/almatkai/markdown-image-to-html",
+    "commit": "54ce6a02c3e7f4aa75d1b3efa6af08d667673d55",
+    "path": "LICENSE",
+    "sha256": "1d7dbdbcd4fe14dfa08334fab20bffad23c1290f195792a3a4420dadf9912f81",
+    "license": "MIT"
+  },
+  {
+    "file": "assets/command-icon.png",
+    "repository": "https://github.com/raycast/extensions",
+    "commit": "6734d85992290066fd31a7f5bee3cca3d3545a1a",
+    "path": "extensions/markdown-image-to-html/assets/command-icon.png",
+    "sha256": "9a603d247a45706dbeef887e4eb0b405700a6e32efe0621059c80b2c8c56d118",
+    "bytes": 63310,
+    "license": "MIT"
+  },
+  {
+    "file": "tests/fixtures/v1/raycast-package.json",
+    "repository": "https://github.com/raycast/extensions",
+    "commit": "6734d85992290066fd31a7f5bee3cca3d3545a1a",
+    "path": "extensions/markdown-image-to-html/package.json",
+    "sha256": "85f7ee0b92084b6b1d444211dc09bc692ba538a4cf1f8998de44b90cc7fb0aa0",
+    "license": "MIT"
+  },
+  {
+    "file": "licenses/Raycast-MIT.txt",
+    "repository": "https://github.com/raycast/extensions",
+    "commit": "6734d85992290066fd31a7f5bee3cca3d3545a1a",
+    "path": "LICENSE",
+    "sha256": "7f727f8b20cdd0e65f84e70b9cac2fce337dcecee4dc88955eb012ea27f02755",
+    "license": "MIT"
+  }
+]
