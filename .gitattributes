@@ -1,0 +1,2 @@
+# Preserve byte-exact upstream license documents, including original whitespace.
+licenses/crates/** -whitespace
