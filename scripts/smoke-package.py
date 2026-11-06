@@ -33,7 +33,7 @@ def smoke(path):
         assert archive.getinfo(binary.relative_to(root).as_posix()).external_attr >> 16 & 0o111
         binary.chmod(0o755)
         # Compare the checked-in both-target notices with the extracted inventory.
-        index = json.loads((root / 'licenses/dependency-license-index.json').read_text())
+        index = json.loads((root / 'licenses/dependency-license-index.json').read_text(encoding="utf-8"))
         for dependency in index['dependencies']:
             for name, digest in dependency['documents'].items():
                 assert inventory[name] == digest and hashlib.sha256((root / name).read_bytes()).hexdigest() == digest

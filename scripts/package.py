@@ -23,7 +23,7 @@ def digest(path):
 
 
 def check_sdk():
-    source = (ROOT / 'Cargo.toml').read_text()
+    source = (ROOT / 'Cargo.toml').read_text(encoding="utf-8")
     match = re.search(r'^tezbar-extension-sdk\s*=\s*\{([^}\n]*)\}', source, re.M)
     fields = match.group(1) if match else ''
     revision = re.search(r'\brev\s*=\s*"([0-9a-f]{40})"', fields)
@@ -32,7 +32,7 @@ def check_sdk():
             or not re.search(r'\bgit\s*=\s*"https://github.com/almatkai/tezbar-extension-sdk-rust.git"', fields)):
         raise SystemExit('Release blocked: use the approved immutable SDK git revision')
     entry = re.search(r'\[\[package\]\]\nname = "tezbar-extension-sdk"(.*?)(?=\[\[package\]\]|\Z)',
-                      (ROOT / 'Cargo.lock').read_text(), re.S)
+                      (ROOT / 'Cargo.lock').read_text(encoding="utf-8"), re.S)
     if not entry or not re.search(r'source = "git\+https://github.com/almatkai/tezbar-extension-sdk-rust.git\?rev=' + SDK_REV + '#' + SDK_REV + '"', entry.group(1)):
         raise SystemExit('Release blocked: Cargo.lock must pin the same immutable SDK revision')
 
@@ -53,8 +53,8 @@ def build(target, binary, output):
     check_sdk()
     assert not binary.is_symlink(), 'Binary symlinks cannot be packaged'
     check_target(binary, target)
-    subprocess.run(['python3', str(ROOT / 'scripts/vendor-licenses.py'), '--check'], cwd=ROOT, check=True)
-    manifest = json.loads((ROOT / 'extension.json').read_text())
+    subprocess.run([os.environ.get('PYTHON', os.sys.executable), str(ROOT / 'scripts/vendor-licenses.py'), '--check'], cwd=ROOT, check=True)
+    manifest = json.loads((ROOT / 'extension.json').read_text(encoding="utf-8"))
     slug = manifest['slug']
     executable = 'bin/tezbar-' + slug + ('.exe' if TARGETS[target] else '')
     info = json.loads(subprocess.check_output([str(binary.resolve()), '--protocol-info'], timeout=10))
@@ -102,10 +102,10 @@ def build(target, binary, output):
             for name, sha in files.items():
                 assert hashlib.sha256(result.read(name)).hexdigest() == sha, name
         artifact = {'target': target, 'sha256': digest(archive), 'executable': executable, 'executableSha256': files[executable]}
-        (output / f'{slug}-{target}.artifact.json').write_text(json.dumps(artifact, indent=2) + '\n')
-        (output / f'{slug}-{target}.files.json').write_text(json.dumps(files, indent=2) + '\n')
-        (output / f'tezbar-{slug}-{target}.sha256').write_text(f"{artifact['executableSha256']}  {executable}\n")
-        (output / f'{archive.name}.sha256').write_text(f"{artifact['sha256']}  {archive.name}\n")
+        (output / f'{slug}-{target}.artifact.json').write_text(json.dumps(artifact, indent=2) + '\n', encoding="utf-8")
+        (output / f'{slug}-{target}.files.json').write_text(json.dumps(files, indent=2) + '\n', encoding="utf-8")
+        (output / f'tezbar-{slug}-{target}.sha256').write_text(f"{artifact['executableSha256']}  {executable}\n", encoding="utf-8")
+        (output / f'{archive.name}.sha256').write_text(f"{artifact['sha256']}  {archive.name}\n", encoding="utf-8")
         print(archive)
 
 

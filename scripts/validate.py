@@ -12,10 +12,10 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def validate(path):
-    manifest = json.loads(path.read_text())
-    schema = json.loads((ROOT / 'schemas/extension-v3.schema.json').read_text())
+    manifest = json.loads(path.read_text(encoding="utf-8"))
+    schema = json.loads((ROOT / 'schemas/extension-v3.schema.json').read_text(encoding="utf-8"))
     jsonschema.Draft202012Validator(schema).validate(manifest)
-    original = json.loads((ROOT / 'package.json').read_text())
+    original = json.loads((ROOT / 'package.json').read_text(encoding="utf-8"))
     metadata = json.loads(subprocess.check_output(['cargo', 'metadata', '--no-deps', '--format-version', '1', '--locked'], cwd=ROOT))
     package = next(p for p in metadata['packages'] if Path(p['manifest_path']) == ROOT/'Cargo.toml')
     assert manifest['version'] == package['version']

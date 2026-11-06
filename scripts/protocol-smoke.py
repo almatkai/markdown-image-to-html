@@ -139,7 +139,7 @@ def exercise(binary, manifest, oracle=True, limits=True, package_dir=None):
     with tempfile.TemporaryDirectory(prefix='markdown-process-') as temporary:
         client = Client(binary, manifest, Path(temporary), package_dir=package_dir)
         try:
-            cases = json.loads((ROOT / 'v2/tests/fixtures/oracle.json').read_text()) if oracle else []
+            cases = json.loads((ROOT / 'v2/tests/fixtures/oracle.json').read_text(encoding="utf-8")) if oracle else []
             cases += [
                 {'name': 'literal multiline', 'payload': {'argumentValues': {'markdownImage': 'before\n![a](u)\nafter'}},
                  'expected': {'status': 'ok', 'calls': [['core:platform:paste-text', ['before\n<img width="300" alt="a" src="u"/>\nafter']]]}},
@@ -222,4 +222,4 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('binary', type=Path)
     args = parser.parse_args()
-    exercise(args.binary, json.loads((ROOT / 'extension.json').read_text()))
+    exercise(args.binary, json.loads((ROOT / 'extension.json').read_text(encoding="utf-8")))
