@@ -2,6 +2,28 @@
 
 Transform a Markdown Image to HTML. This allows us to fix image size in Markdown base files.
 
+## Downloads
+
+Standalone Rust process package **0.2.0**.
+
+| Platform | Download |
+|---|---|
+| macOS, Apple silicon | [ZIP](https://github.com/almatkai/markdown-image-to-html/releases/download/v0.2.0/markdown-image-to-html-aarch64-apple-darwin.zip) |
+| Windows x64 | [ZIP](https://github.com/almatkai/markdown-image-to-html/releases/download/v0.2.0/markdown-image-to-html-x86_64-pc-windows-msvc.zip) |
+
+Download the [installation reference](https://github.com/almatkai/markdown-image-to-html/releases/download/v0.2.0/extension-release.json), [checksums](https://github.com/almatkai/markdown-image-to-html/releases/download/v0.2.0/SHA256SUMS) and [validation record](https://github.com/almatkai/markdown-image-to-html/releases/download/v0.2.0/validation.json). The reference pins the archive and executable for each target.
+
+With the Tezbar CLI, import the matching ZIP:
+
+```sh
+# macOS
+tezbar --extensions-v3-import extension-release.json markdown-image-to-html-aarch64-apple-darwin.zip
+# Windows
+tezbar.exe --extensions-v3-import extension-release.json markdown-image-to-html-x86_64-pc-windows-msvc.zip
+```
+
+Both native packages passed extracted-process checks and actual CLI installation in isolated profiles. Desktop/WebView acceptance is still unverified. Store discovery requires a Tezbar catalog update; the download does not imply that this app update has shipped.
+
 ## Installable native Rust extension for Tezbar
 
 The root [extension.json](extension.json) describes the standalone Rust process package,
